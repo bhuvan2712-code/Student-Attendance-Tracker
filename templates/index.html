@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Attendance Tracker for college students - Track daily classes and stay above the 75% threshold effortlessly.">
+    <title>Smart Attendance Tracker | Student Dashboard</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit for ultra-modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons for intuitive visual cues -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom CSS Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Animated Ambient Background Glows -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-3"></div>
+
+    <!-- Main Application Container -->
+    <div class="app-container">
+
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1>Smart Attendance Tracker</h1>
+                        <p class="subtitle">Daily class logging & intelligent 75% target predictor for college students</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Dark/Light Mode" title="Toggle Dark/Light Mode">
+                        <i class="fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+                    <div class="header-badge" id="todayDateBadge">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="headerCurrentDate">Today</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Student Profile Card Section -->
+        <section class="profile-section">
+            <div class="profile-card">
+                <div class="profile-left">
+                    <!-- Profile Avatar: click to upload photo -->
+                    <div class="profile-avatar-wrapper" id="profileAvatarWrapper" title="Click to change photo">
+                        <div class="profile-avatar" id="profileAvatar">RS</div>
+                        <div class="avatar-camera-overlay" id="avatarCameraOverlay">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name-row">
+                            <h2 id="profileName">Rahul Sharma</h2>
+                            <span class="profile-pill pill-roll" id="profileRollNo">24BCE1001</span>
+                        </div>
+                        <div class="profile-meta-row">
+                            <span class="profile-meta-item"><i class="fa-solid fa-graduation-cap"></i> <span id="profileCourse">B.Tech</span></span>
+                            <span class="meta-dot">&bull;</span>
+                            <span class="profile-meta-item"><i class="fa-solid fa-code-branch"></i> <span id="profileBranch">Computer Science &amp; Engineering</span></span>
+                            <span class="meta-dot">&bull;</span>
+                            <span class="profile-meta-item"><i class="fa-solid fa-layer-group"></i> <span id="profileSemester">1st Semester</span></span>
+                            <span class="meta-dot">&bull;</span>
+                            <span class="profile-meta-item"><i class="fa-solid fa-building-columns"></i> <span id="profileCollege">Engineering College</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-right">
+                    <button type="button" class="btn-profile-edit" id="btnOpenEditProfile" title="Edit Student Details">
+                        <i class="fa-solid fa-user-pen"></i> Edit Profile
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Dashboard Metrics Grid (4 Stat Cards) -->
+        <section class="dashboard-grid">
+            <!-- Card 1: Total Conducted -->
+            <div class="stat-card" id="cardConducted">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-title">Classes Conducted</span>
+                    <h2 class="stat-value" id="statConducted">0</h2>
+                    <span class="stat-subtext">Cumulative sum of all held classes</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Total Attended -->
+            <div class="stat-card" id="cardAttended">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-title">Classes Attended</span>
+                    <h2 class="stat-value" id="statAttended">0</h2>
+                    <span class="stat-subtext">Total lectures you were present for</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Attendance Percentage -->
+            <div class="stat-card" id="cardPercentage">
+                <div class="stat-icon icon-purple">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-title">Overall Attendance</span>
+                    <div class="percentage-wrapper">
+                        <h2 class="stat-value" id="statPercentage">0.0%</h2>
+                        <span class="target-chip">Min: 75%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="statProgressBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Attendance Status Badge -->
+            <div class="stat-card" id="cardStatus">
+                <div class="stat-icon icon-amber" id="statusIconWrapper">
+                    <i class="fa-solid fa-shield-halved" id="statusIcon"></i>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-title">Current Standing</span>
+                    <div class="status-badge status-neutral" id="statusBadge">
+                        <span class="pulse-dot"></span>
+                        <span id="statusBadgeText">Checking...</span>
+                    </div>
+                    <span class="stat-subtext" id="statusSubtext">Waiting for data</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Smart Warning & Prediction Banner (Bonus Feature) -->
+        <section class="banner-section">
+            <div class="smart-banner banner-neutral" id="smartBanner">
+                <div class="banner-icon-container" id="bannerIconWrapper">
+                    <i class="fa-solid fa-circle-info" id="bannerIcon"></i>
+                </div>
+                <div class="banner-text">
+                    <h3 id="bannerTitle">Welcome to Smart Attendance Tracker!</h3>
+                    <p id="bannerMessage">Log your daily attendance below. The system automatically computes your totals and calculates how many classes you must attend or can safely miss!</p>
+                </div>
+                <div class="banner-metric" id="bannerMetricBox" style="display: none;">
+                    <span class="banner-metric-number" id="bannerMetricVal">0</span>
+                    <span class="banner-metric-label" id="bannerMetricLabel">Classes Needed</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Grid: Form + History -->
+        <main class="content-grid">
+
+            <!-- Left Column: Daily Attendance Entry Form -->
+            <section class="card form-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-plus-circle"></i> Daily Attendance Entry</h2>
+                    <p>Enter today's lectures or past dates to update your records.</p>
+                </div>
+
+                <form id="attendanceForm" novalidate>
+                    <!-- Date Input -->
+                    <div class="form-group">
+                        <label for="entryDate"><i class="fa-regular fa-calendar-days"></i> Select Date</label>
+                        <input type="date" id="entryDate" name="date" required>
+                        <span class="input-hint">Defaults to today's date</span>
+                    </div>
+
+                    <!-- Sunday Detection Warning Alert -->
+                    <div class="sunday-alert" id="sundayAlert" style="display: none;">
+                        <i class="fa-solid fa-umbrella-beach"></i>
+                        <div class="sunday-alert-text">
+                            <strong>Sunday Detected:</strong> Colleges are usually closed on Sundays.
+                            <span>If extra classes were held, enter them below; or switch on <strong>Holiday Mode</strong>.</span>
+                        </div>
+                    </div>
+
+                    <!-- College Holiday Toggle -->
+                    <div class="holiday-mode-card">
+                        <label class="toggle-switch-label" for="toggleHolidayMode">
+                            <input type="checkbox" id="toggleHolidayMode">
+                            <span class="custom-toggle"></span>
+                            <span class="toggle-text"><i class="fa-solid fa-mug-hot"></i> Mark as College Holiday / Off</span>
+                        </label>
+                    </div>
+
+                    <!-- Holiday Reason Group (Visible when Holiday Mode is ON) -->
+                    <div class="form-group" id="groupHolidayReason" style="display: none;">
+                        <label for="entryHolidayReason"><i class="fa-solid fa-tag"></i> Holiday Occasion / Reason</label>
+                        <input type="text" id="entryHolidayReason" placeholder="e.g. Sunday Off, Diwali Break, Sports Day">
+                        <span class="input-hint">Holidays are logged in your records without reducing your 75% attendance!</span>
+                    </div>
+
+                    <!-- Regular Class Inputs Container (Hidden when Holiday Mode is ON) -->
+                    <div id="groupClassInputs">
+                        <!-- Classes Conducted Input -->
+                        <div class="form-group">
+                            <label for="entryConducted"><i class="fa-solid fa-book-open"></i> Classes Conducted Today</label>
+                            <input type="number" id="entryConducted" name="conducted" min="1" max="20" placeholder="e.g. 5">
+                            <span class="input-hint">Total number of lectures scheduled/held</span>
+                        </div>
+
+                        <!-- Classes Attended Input -->
+                        <div class="form-group">
+                            <div class="label-with-action">
+                                <label for="entryAttended"><i class="fa-solid fa-user-check"></i> Classes Attended Today</label>
+                                <button type="button" class="btn-text" id="btnFullAttendance" title="Set attended equal to conducted">
+                                    <i class="fa-solid fa-bolt"></i> 100% Attended
+                                </button>
+                            </div>
+                            <input type="number" id="entryAttended" name="attended" min="0" max="20" placeholder="e.g. 4">
+                            <span class="input-hint">Must be between 0 and classes conducted</span>
+                        </div>
+                    </div>
+
+                    <!-- Form Action Buttons -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="btnSubmit">
+                            <i class="fa-solid fa-floppy-disk"></i> <span id="btnSubmitText">Save Attendance Record</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Student Tip Box -->
+                <div class="info-tip-box">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <div>
+                        <strong>No Semester Totals Required:</strong> You don't need to know the entire semester's class count. Just log each day, and the system aggregates everything accurately!
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Attendance History Table -->
+            <section class="card history-card">
+                <div class="card-header history-header">
+                    <div>
+                        <h2><i class="fa-solid fa-clock-rotate-left"></i> Attendance History</h2>
+                        <p>Complete log of your daily attendance entries.</p>
+                    </div>
+                    <div class="record-counter" id="recordCounter">
+                        0 Entries
+                    </div>
+                </div>
+
+                <!-- Table Container with Responsive Scroll -->
+                <div class="table-responsive">
+                    <table class="history-table" id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Conducted</th>
+                                <th>Attended</th>
+                                <th>Missed</th>
+                                <th>Daily %</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- Rows dynamically populated by script.js -->
+                        </tbody>
+                    </table>
+
+                    <!-- Empty State Placeholder (when no records exist) -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <div class="empty-icon">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <h3>No Attendance Records Yet</h3>
+                        <p>Use the form on the left to add your first day's class attendance.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Smart Attendance Tracker &copy; College Student Edition &bull; Built with Python Flask & SQLite</p>
+        </footer>
+
+    </div>
+
+    <!-- Edit Attendance Modal Dialog -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <h3 id="modalTitle"><i class="fa-solid fa-pen-to-square"></i> Edit Attendance Entry</h3>
+                <button type="button" class="btn-close" id="btnCloseModal" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editRecordId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editDate">Date</label>
+                        <input type="date" id="editDate" required>
+                    </div>
+                    <div class="holiday-mode-card" style="margin-bottom: 1.25rem;">
+                        <label class="toggle-switch-label" for="editToggleHoliday">
+                            <input type="checkbox" id="editToggleHoliday">
+                            <span class="custom-toggle"></span>
+                            <span class="toggle-text"><i class="fa-solid fa-mug-hot"></i> College Holiday / Off</span>
+                        </label>
+                    </div>
+                    <div class="form-group" id="editGroupHolidayReason" style="display: none;">
+                        <label for="editHolidayReason">Holiday Occasion / Reason</label>
+                        <input type="text" id="editHolidayReason" placeholder="e.g. Diwali Break, Sunday Off">
+                    </div>
+                    <div id="editGroupClassInputs">
+                        <div class="form-group">
+                            <label for="editConducted">Classes Conducted</label>
+                            <input type="number" id="editConducted" min="1" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="editAttended">Classes Attended</label>
+                            <input type="number" id="editAttended" min="0" max="20">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelEdit">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveEdit">
+                        <i class="fa-solid fa-check"></i> Update Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Student Profile Modal Dialog -->
+    <div class="modal-overlay" id="profileModalOverlay">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+            <div class="modal-header">
+                <h3 id="profileModalTitle"><i class="fa-solid fa-user-pen"></i> Edit Student Profile</h3>
+                <button type="button" class="btn-close" id="btnCloseProfileModal" aria-label="Close profile modal">&times;</button>
+            </div>
+            <form id="profileForm" enctype="multipart/form-data">
+                <div class="modal-body">
+
+                    <!-- ===== PHOTO UPLOAD SECTION ===== -->
+                    <div class="photo-upload-section">
+                        <div class="photo-preview-wrapper">
+                            <div class="photo-preview" id="photoPreview">
+                                <!-- Shows current photo or initials -->
+                                <span id="photoPreviewInitials">RS</span>
+                                <img id="photoPreviewImg" src="" alt="Profile" style="display:none;">
+                            </div>
+                            <div class="photo-preview-overlay" id="photoPreviewOverlay">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                        </div>
+                        <div class="photo-upload-actions">
+                            <label class="btn btn-secondary btn-sm" for="inputProfilePhoto" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                                <i class="fa-solid fa-upload"></i> Choose Photo
+                            </label>
+                            <input type="file" id="inputProfilePhoto" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" style="display:none;">
+                            <button type="button" class="btn btn-danger btn-sm" id="btnRemovePhoto" style="display:none;">
+                                <i class="fa-solid fa-trash"></i> Remove Photo
+                            </button>
+                        </div>
+                        <p class="input-hint" style="margin-top:6px;">PNG, JPG, GIF or WEBP &bull; Max 5 MB</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputProfileName"><i class="fa-solid fa-user"></i> Student Full Name</label>
+                        <input type="text" id="inputProfileName" placeholder="e.g. Rahul Sharma" required>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="inputProfileRollNo"><i class="fa-solid fa-id-card"></i> Roll No / ID</label>
+                            <input type="text" id="inputProfileRollNo" placeholder="e.g. 24BCE1001">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputProfileCourse"><i class="fa-solid fa-graduation-cap"></i> Course</label>
+                            <input type="text" id="inputProfileCourse" placeholder="e.g. B.Tech">
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="inputProfileBranch"><i class="fa-solid fa-code-branch"></i> Branch / Specialization</label>
+                            <input type="text" id="inputProfileBranch" placeholder="e.g. Computer Science">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputProfileSemester"><i class="fa-solid fa-layer-group"></i> Semester</label>
+                            <input type="text" id="inputProfileSemester" placeholder="e.g. 1st Semester">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputProfileCollege"><i class="fa-solid fa-building-columns"></i> College / University</label>
+                        <input type="text" id="inputProfileCollege" placeholder="e.g. Engineering College">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelProfile">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveProfile">
+                        <i class="fa-solid fa-check"></i> Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container (for success / error alerts) -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Application JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
